@@ -10,7 +10,7 @@ ARG BOT_GROUP="nogroup"
 ARG BOT_HOME_DIR="/srv"
 ARG APP_DIR="${BOT_HOME_DIR}/app"
 ARG GITHUB_URL="https://github.com/ChainedLupine/FGD_JoinCaptchaBot"
-ARG GITHUB_BRANCH="master"
+ARG GITHUB_BRANCH="fgd"
 
 # Export ARGs as ENV vars so they can be shared among steps
 ENV BOT_PROJECT="${BOT_PROJECT}" \
@@ -51,10 +51,13 @@ RUN apt-get ${APT_OPTS} update && \
 
 FROM builder-deps AS builder
 
+# flag this build
+COPY build_date /dev/null
+
 # Build the code as unprivileged user
 USER ${BOT_USER}
 WORKDIR ${BOT_HOME_DIR}
-RUN git clone --branch %{GITHUB_BRANCH} ${GITHUB_URL} ${APP_DIR} && \
+RUN git clone --branch ${GITHUB_BRANCH} ${GITHUB_URL} ${APP_DIR} && \
     python3 -m pip install --user --requirement ${APP_DIR}/requirements.txt && \
     cd ${APP_DIR}/sources && \
     chown -cR ${BOT_USER}:${BOT_GROUP} ${BOT_HOME_DIR} && \

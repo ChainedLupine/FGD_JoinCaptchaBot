@@ -13,6 +13,10 @@ build:
 force:
 	docker build -f "${DOCKERFILE}" -t "${NAME}" --no-cache .
 
+rebuild:
+	date > build_date
+	docker build -f "${DOCKERFILE}" -t "${NAME}" .
+
 test:
 	$(MAKE)
 	docker run -it $(NAME):latest

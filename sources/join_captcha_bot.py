@@ -71,7 +71,7 @@ from tlgbotutils import (
     tlg_answer_callback_query, tlg_delete_msg, tlg_edit_msg_media,
     tlg_ban_user, tlg_kick_user, tlg_user_is_admin, tlg_leave_chat,
     tlg_restrict_user, tlg_is_valid_user_id_or_alias, tlg_is_valid_group,
-    tlg_alias_in_string, tlg_extract_members_status_change
+    tlg_alias_in_string, tlg_extract_members_status_change, tlg_user_is_owner,
 )
 
 from constants import (
@@ -581,7 +581,7 @@ def allowed_in_this_group(bot, chat, member_added_by):
             chat_link = "@{}".format(chat.username)
         printts("{}, {}, {}, {}".format(chat.id, from_user_name, chat.title,
                 chat_link))
-        msg_text = CONST["NOT_ALLOW_GROUP"].format(CONST["BOT_OWNER"], chat.id,
+        msg_text = CONST["NOT_ALLOW_GROUP"].format(CONST["\"], chat.id,
                 CONST["REPOSITORY"])
         tlg_send_msg(bot, chat.id, msg_text)
         return False
@@ -1583,8 +1583,7 @@ def cmd_connect(update: Update, context: CallbackContext):
                 TEXT[lang]["INVALID_GROUP_ID"])
         return
     # Check if requested by the Bot owner or an Admin of the group
-    if (str(user_id) != CONST["BOT_OWNER"]) and \
-    (user_alias != CONST["BOT_OWNER"]):
+    if not tlg_user_is_owner(update_msg.from_user):
         is_admin = tlg_user_is_admin(bot, user_id, group_id)
         if (is_admin is None) or (is_admin == False):
             tlg_send_msg_type_chat(bot, chat_type, chat_id,
@@ -2427,6 +2426,23 @@ def cmd_chatid(update: Update, context: CallbackContext):
         tlg_msg_to_selfdestruct(update_msg)
         tlg_send_selfdestruct_msg(bot, chat_id, msg_text)
 
+def cmd_userid(update: Update, context: CallbackContext):
+    '''Command /userid message handler'''
+    bot = context.bot
+    # Ignore command if it was a edited message
+    update_msg = getattr(update, "message", None)
+    if update_msg is None:
+        return
+    user_id = update_msg.user_id
+    chat_type = update_msg.chat.type
+    if chat_type == "private":
+        msg_text = "Your User ID:\n—————————\n{}".format(user_id)
+        tlg_send_msg(bot, chat_id, msg_text)
+    else:
+        msg_text = "Sorry, send this command to me privately to use it!"
+        tlg_msg_to_selfdestruct(update_msg)
+        tlg_send_selfdestruct_msg(bot, chat_id, msg_text)
+
 
 def cmd_version(update: Update, context: CallbackContext):
     '''Command /version message handler'''
@@ -2487,8 +2503,7 @@ def cmd_captcha(update: Update, context: CallbackContext):
         user_alias = "@{}".format(user.username)
     lang = get_update_user_lang(update_msg.from_user)
     # Check if command was execute by Bot owner
-    if (str(user_id) != CONST["BOT_OWNER"]) and \
-    (user_alias != CONST["BOT_OWNER"]):
+		if not tlg_user_is_owner(user):
         tlg_send_selfdestruct_msg(bot, chat_id, CONST["CMD_JUST_ALLOW_OWNER"])
         return
     # Set user command message to be deleted by Bot in default time
@@ -2529,7 +2544,7 @@ def cmd_allowuserlist(update: Update, context: CallbackContext):
         user_alias = "@{}".format(user.username)
     lang = get_update_user_lang(update_msg.from_user)
     # Check if command was execute by Bot owner
-    if (str(user_id) != CONST["BOT_OWNER"]) and (user_alias != CONST["BOT_OWNER"]):
+    if not tlg_user_is_owner(user):
         tlg_send_selfdestruct_msg(bot, chat_id, CONST["CMD_JUST_ALLOW_OWNER"])
         return
     # Check if no argument was provided with the command
@@ -2589,7 +2604,7 @@ def cmd_allowgroup(update: Update, context: CallbackContext):
         user_alias = "@{}".format(user.username)
     lang = get_update_user_lang(update_msg.from_user)
     # Check if command was execute by Bot owner
-    if (str(user_id) != CONST["BOT_OWNER"]) and (user_alias != CONST["BOT_OWNER"]):
+    if not tlg_user_is_owner(user):
         tlg_send_selfdestruct_msg(bot, chat_id, CONST["CMD_JUST_ALLOW_OWNER"])
         return
     # Check if no argument was provided with the command

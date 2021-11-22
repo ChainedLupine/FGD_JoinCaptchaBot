@@ -2894,6 +2894,7 @@ def main():
     dp.add_handler(CommandHandler("enable", cmd_enable))
     dp.add_handler(CommandHandler("disable", cmd_disable))
     dp.add_handler(CommandHandler("chatid", cmd_chatid))
+    dp.add_handler(CommandHandler("userid", cmd_userid))
     dp.add_handler(CommandHandler("version", cmd_version))
     dp.add_handler(CommandHandler("about", cmd_about))
     if (CONST["BOT_OWNER"] != "XXXXXXXXX"):

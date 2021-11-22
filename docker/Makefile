@@ -14,6 +14,8 @@ force:
 	docker build -f "${DOCKERFILE}" -t "${NAME}" --no-cache .
 
 rebuild:
+	docker stop $(CONTAINER)
+	docker rm $(CONTAINER)
 	date > build_date
 	docker build -f "${DOCKERFILE}" -t "${NAME}" .
 

@@ -2433,7 +2433,7 @@ def cmd_userid(update: Update, context: CallbackContext):
     update_msg = getattr(update, "message", None)
     if update_msg is None:
         return
-    user_id = update_msg.user_id
+    user_id = update_msg.from_user.user_id
     chat_type = update_msg.chat.type
     if chat_type == "private":
         msg_text = "Your User ID:\n—————————\n{}".format(user_id)

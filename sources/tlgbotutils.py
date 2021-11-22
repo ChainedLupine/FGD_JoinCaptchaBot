@@ -282,6 +282,11 @@ def tlg_restrict_user(bot, chat_id, user_id, until_date=None, timeout=None,
     return result
 
 
+def tlg_user_is_owner(bot, user):
+		'''Checks the User record to see if considered the bot owner.'''
+    return (str(user.user_id) == CONST["BOT_OWNER"]) or \
+					 (user["username"] is not None and user.username == CONST["BOT_OWNER"])
+
 def tlg_user_is_admin(bot, user_id, chat_id, timeout=None):
     '''Check if the specified user is an Administrator of a group given
     by IDs'''

@@ -199,7 +199,7 @@ CONST = {
     "T_SECONDS_IN_A_DAY": 86400,
 
     # Command just allow for Bot owner
-    "CMD_JUST_ALLOW_OWNER": "This command just can be use by the Bot Owner",
+    "CMD_JUST_ALLOW_OWNER": "This command is only allowed for the Bot Owner!",
 
     # Bot added to channel, leave text
     "BOT_LEAVE_CHANNEL": "This Bot can't be used in channels, just in groups.",

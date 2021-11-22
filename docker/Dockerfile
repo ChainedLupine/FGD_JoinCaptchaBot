@@ -4,12 +4,12 @@
 FROM python:3.8.8-slim-buster AS base
 
 # Build ARGs
-ARG BOT_PROJECT="captcha-bot"
+ARG BOT_PROJECT="cl-captcha-bot"
 ARG BOT_USER="nobody"
 ARG BOT_GROUP="nogroup"
 ARG BOT_HOME_DIR="/srv"
 ARG APP_DIR="${BOT_HOME_DIR}/app"
-ARG GITHUB_URL="https://github.com/J-Rios/TLG_JoinCaptchaBot"
+ARG GITHUB_URL="https://github.com/ChainedLupine/FGD_JoinCaptchaBot"
 
 # Export ARGs as ENV vars so they can be shared among steps
 ENV BOT_PROJECT="${BOT_PROJECT}" \

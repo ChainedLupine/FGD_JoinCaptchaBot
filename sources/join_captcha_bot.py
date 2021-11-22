@@ -2437,7 +2437,7 @@ def cmd_userid(update: Update, context: CallbackContext):
     chat_type = update_msg.chat.type
     if chat_type == "private":
         msg_text = "Your User ID:\n—————————\n{}".format(user_id)
-        tlg_send_msg(bot, chat_id, msg_text)
+        tlg_send_msg(bot, update_msg.chat_id, msg_text)
     else:
         msg_text = "Sorry, send this command to me privately to use it!"
         tlg_msg_to_selfdestruct(update_msg)

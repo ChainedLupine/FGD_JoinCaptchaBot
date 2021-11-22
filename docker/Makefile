@@ -19,6 +19,11 @@ rebuild:
 	date > build_date
 	docker build -f "${DOCKERFILE}" -t "${NAME}" .
 
+remove:
+	docker stop $(CONTAINER)
+	docker rm $(CONTAINER)
+	docker image rm $(NAME)
+
 test:
 	$(MAKE)
 	docker run -it $(NAME):latest

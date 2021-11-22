@@ -23,13 +23,13 @@ ENV BOT_PROJECT="${BOT_PROJECT}" \
     DEBIAN_FRONTEND=noninteractive \
     APT_OPTS="-q=2 --no-install-recommends --yes"
 
+################################################################################
+
+FROM base AS builderdeps
+
 # Prepare a directory to run with an unprivileged user
 RUN chown -cR "${BOT_USER}:${BOT_GROUP}" ${BOT_HOME_DIR} && \
     usermod -d ${BOT_HOME_DIR} ${BOT_USER}
-
-################################################################################
-
-FROM base AS builder-deps
 
 # Install build dependencies
 RUN apt-get ${APT_OPTS} update && \
@@ -47,9 +47,18 @@ RUN apt-get ${APT_OPTS} update && \
     tk8.6-dev \
     python3-tk
 
+USER ${BOT_USER}
+
+COPY requirements.txt ${BOT_HOME_DIR}
+
+WORKDIR ${BOT_HOME_DIR}
+
+RUN python3 -m pip install --user --requirement requirements.txt
+RUN rm requirements.txt
+
 ################################################################################
 
-FROM builder-deps AS builder
+FROM builderdeps AS builder
 
 # flag this build
 COPY build_date /dev/null
@@ -57,9 +66,8 @@ COPY build_date /dev/null
 # Build the code as unprivileged user
 USER ${BOT_USER}
 WORKDIR ${BOT_HOME_DIR}
-RUN git clone --branch ${GITHUB_BRANCH} ${GITHUB_URL} ${APP_DIR} && \
-    python3 -m pip install --user --requirement ${APP_DIR}/requirements.txt && \
-    cd ${APP_DIR}/sources && \
+RUN git clone --branch ${GITHUB_BRANCH} ${GITHUB_URL} ${APP_DIR}
+RUN cd ${APP_DIR}/sources && \
     chown -cR ${BOT_USER}:${BOT_GROUP} ${BOT_HOME_DIR} && \
     rm -rf ${BOT_HOME_DIR}/.cache && \
     find ${APP_DIR} -iname '.git*' -print0 | xargs -0 -r -t rm -rf

@@ -2503,7 +2503,7 @@ def cmd_captcha(update: Update, context: CallbackContext):
         user_alias = "@{}".format(user.username)
     lang = get_update_user_lang(update_msg.from_user)
     # Check if command was execute by Bot owner
-		if not tlg_user_is_owner(user):
+    if not tlg_user_is_owner(user):
         tlg_send_selfdestruct_msg(bot, chat_id, CONST["CMD_JUST_ALLOW_OWNER"])
         return
     # Set user command message to be deleted by Bot in default time

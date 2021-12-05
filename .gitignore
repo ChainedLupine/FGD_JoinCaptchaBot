@@ -8,3 +8,4 @@
 **/*.ignore
 docker/env.txt
 docker/build_date
+docker../build_date

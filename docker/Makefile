@@ -3,7 +3,7 @@ SHELL = /bin/bash
 NAME = cl-captcha-bot
 CONTAINER = fgd-captcha-bot
 DOCKERFILE = Dockerfile
-
+SRC_DIR = `pwd`/../sources
 
 .PHONY: build force test debug
 
@@ -13,16 +13,20 @@ build:
 force:
 	docker build -f "${DOCKERFILE}" -t "${NAME}" --no-cache .
 
-rebuild:
-	docker stop $(CONTAINER)
-	docker rm $(CONTAINER)
-	date > build_date
-	docker build -f "${DOCKERFILE}" -t "${NAME}" .
+dev:
+	docker build --target builderdeps -f "${DOCKERFILE}" -t "${NAME}-dev" .
+	docker run  --env-file ./env.txt --mount type=bind,source="${SRC_DIR}",target=/srv/app --entrypoint "/srv/app/entrypoint.sh" -it "${NAME}-dev"
 
 remove:
 	docker stop $(CONTAINER)
 	docker rm $(CONTAINER)
 	docker image rm $(NAME)
+
+stop:
+	docker stop $(CONTAINER)
+
+start:
+	docker start $(CONTAINER)
 
 test:
 	$(MAKE)
@@ -31,10 +35,10 @@ test:
 debug:	test
 	docker run -it --user=root --entrypoint ${SHELL} $(NAME):latest
 
-start:
+create:
 	docker run -d --name $(CONTAINER) --env-file ./env.txt --restart always $(NAME)
 	
-stop:
+delete:
 	docker stop $(CONTAINER)
 	docker rm $(CONTAINER)
 	

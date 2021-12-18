@@ -2,6 +2,7 @@
 SHELL = /bin/bash
 NAME = cl-captcha-bot
 CONTAINER = fgd-captcha-bot
+DATA_VOLUME = fgd-captcha-data
 DOCKERFILE = Dockerfile
 SRC_DIR = `pwd`/../sources
 
@@ -36,7 +37,7 @@ debug:	test
 	docker run -it --user=root --entrypoint ${SHELL} $(NAME):latest
 
 create:
-	docker run -d --name $(CONTAINER) --env-file ./env.txt --restart always $(NAME)
+	docker run -d --name $(CONTAINER) --env-file ./env.txt --restart always -v $(DATA_VOLUME):/srv/data $(NAME)
 	
 delete:
 	docker stop $(CONTAINER)
@@ -44,3 +45,6 @@ delete:
 	
 logs:
 	docker logs $(CONTAINER)
+
+login:
+	docker exec -it $(CONTAINER) /bin/bash

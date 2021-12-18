@@ -11,6 +11,7 @@ ARG BOT_HOME_DIR="/srv"
 ARG APP_DIR="${BOT_HOME_DIR}/app"
 ARG GITHUB_URL="https://github.com/ChainedLupine/FGD_JoinCaptchaBot"
 ARG GITHUB_BRANCH="fgd"
+ARG VOLUME_MOUNTPT="/srv/data"
 
 # Export ARGs as ENV vars so they can be shared among steps
 ENV BOT_PROJECT="${BOT_PROJECT}" \
@@ -30,7 +31,7 @@ FROM base AS builderdeps
 # Prepare a directory to run with an unprivileged user
 RUN chown -cR "${BOT_USER}:${BOT_GROUP}" ${BOT_HOME_DIR} && \
     usermod -d ${BOT_HOME_DIR} ${BOT_USER}
-
+		
 # Install build dependencies
 RUN apt-get ${APT_OPTS} update && \
     apt-get ${APT_OPTS} install \
@@ -55,6 +56,8 @@ WORKDIR ${BOT_HOME_DIR}
 
 RUN python3 -m pip install --user --requirement requirements.txt
 RUN rm requirements.txt
+
+
 
 ################################################################################
 
@@ -85,8 +88,14 @@ COPY --from=builder ${BOT_HOME_DIR} ${BOT_HOME_DIR}
 # Adjust privileges
 RUN chown -R "${BOT_USER}:${BOT_GROUP}" ${BOT_HOME_DIR} && \
     usermod -d ${BOT_HOME_DIR} ${BOT_USER}
-
+		
 # Set up to run as an unprivileged user
 USER ${BOT_USER}
 WORKDIR ${APP_DIR}/sources
+
+# Prepare volume
+RUN mkdir -p ${VOLUME_MOUNTPT}  && chown "${BOT_USER}:${BOT_GROUP}" ${VOLUME_MOUNTPT}
+
+VOLUME ${VOLUME_MOUNTPT}
+
 CMD ["./entrypoint.sh"]
